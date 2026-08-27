@@ -1,125 +1,1480 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full">
+
 <head>
-  <link rel="icon" type="image/png" href="/EVO.png">
-  <meta charset="UTF-8">
-  <title>Sitio en Construcción</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <meta name="description" content="Nuestro sitio web está en construcción. Pronto estará disponible.">
-
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
-
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    body {
-      background: #ffffff;
-      color: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-    }
-
-    .container {
-      max-width: 600px;
-      padding: 20px;
-    }
-
-    .logo {
-      width: 180px;
-      margin-bottom: 20px;
-      animation: fadeIn 1.5s ease;
-    }
-
-    .icon {
-      font-size: 70px;
-      margin-bottom: 15px;
-      animation: bounce 2s infinite;
-    }
-
-    h1 {
-      font-size: 38px;
-      letter-spacing: 2px;
-      margin-bottom: 10px;
-      color: #f39c12;
-    }
-
-    p {
-      font-size: 18px;
-      color: #555;
-      margin-bottom: 30px;
-    }
-
-    .loader {
-      width: 100%;
-      height: 6px;
-      background: #eee;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .loader::before {
-      content: "";
-      display: block;
-      height: 100%;
-      width: 40%;
-      background: #f39c12;
-      animation: loading 2s infinite;
-    }
-
-    footer {
-      margin-top: 30px;
-      font-size: 14px;
-      color: #888;
-    }
-
-    @keyframes loading {
-      0% { margin-left: -40%; }
-      100% { margin-left: 100%; }
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
+<link rel="icon" type="image/png" href="/EVO.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Sellos - EvoDig</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS for Excel import -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
 
-  <div class="container">
+<body class="h-full bg-slate-50 text-slate-800 flex flex-col font-sans antialiased">
 
-    <!-- LOGO -->
-    <img 
-      src="https://lh3.googleusercontent.com/d/1Iyl0KiE1H7hR7ZeWsBmlZ94M9IXvnwr3" 
-      alt="Logo" 
-      class="logo"
-    >
+    <!-- HEADER -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="resetCatalog()">
+                <div class="w-11 h-11 bg-white border border-slate-200 rounded-xl shadow-md flex items-center justify-center overflow-hidden">
+                    <img src="https://drive.google.com/thumbnail?id=1Iyl0KiE1H7hR7ZeWsBmlZ94M9IXvnwr3&sz=w200"
+                        alt="Logo EvoDig" class="w-full h-full object-contain p-1"
+                        onerror="this.parentElement.innerHTML='<i class=\'fa-solid fa-stamp text-xl text-brand-600\'></i>'">
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">EVOLUCIÓN DIGITAL</h1>
+                    <p class="text-xs text-slate-500 font-medium">Catálogo de Sellos</p>
+                </div>
+            </div>
 
-    <div class="icon">🚧</div>
+            <!-- Search bar header -->
+            <div class="hidden md:flex flex-1 max-w-md mx-8">
+                <div class="relative w-full">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-search"></i>
+                    </span>
+                    <input type="text" id="searchInput" oninput="handleSearch(this.value)"
+                        placeholder="Buscar por nombre, código o categoría..."
+                        class="w-full pl-10 pr-4 py-2 bg-slate-100 border border-transparent rounded-full text-sm focus:outline-none focus:bg-white focus:border-brand-500 transition">
+                </div>
+            </div>
 
-    <h1>SITIO EN CONSTRUCCIÓN</h1>
-    <p>Estamos trabajando para traerte algo increíble.<br>¡Gracias por tu visita!</p>
+            <div class="flex items-center space-x-3">
+                <button onclick="openAdminLoginModal()"
+                    class="text-slate-400 hover:text-slate-600 p-2 rounded-lg transition" title="Panel Admin">
+                    <i class="fa-solid fa-lock text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
 
-    <div class="loader"></div>
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col">
+        <!-- Mobile Search -->
+        <div class="md:hidden mb-6">
+            <div class="relative w-full">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-search"></i>
+                </span>
+                <input type="text" id="mobileSearchInput" oninput="handleSearch(this.value)"
+                    placeholder="Buscar productos..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500 shadow-sm">
+            </div>
+        </div>
 
-    <footer>
-      © 2026 - Todos los derechos reservados
-    </footer>
+        <!-- Categories Filter Tabs -->
+        <div class="flex items-center space-x-2 overflow-x-auto pb-4 mb-6 no-scrollbar" id="categoryTabs">
+            <!-- Dynamically populated categories -->
+        </div>
 
-  </div>
+        <!-- Catalog Status / Title -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 id="categoryTitle" class="text-2xl font-bold text-slate-900">Todos los Productos</h2>
+            <span id="productCount" class="text-sm font-medium text-slate-500 bg-slate-200 px-3 py-1 rounded-full">0
+                productos</span>
+        </div>
 
+        <!-- Products Grid -->
+        <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamically populated cards -->
+        </div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-16 text-center">
+            <div
+                class="bg-slate-100 text-slate-400 w-16 h-16 rounded-full flex items-center justify-center text-2xl mb-4">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-700">No se encontraron productos</h3>
+            <p class="text-slate-500 text-sm mt-1">Intenta con otra búsqueda o categoría.</p>
+        </div>
+    </main>
+
+    <!-- PRODUCT DETAIL MODAL -->
+    <div id="productModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 overflow-hidden transform scale-95 transition-transform duration-300 flex flex-col max-h-[90vh]"
+            id="modalContentWrapper">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+                <div>
+                    <span id="modalCategory"
+                        class="text-xs font-semibold text-brand-600 uppercase tracking-wider">Categoría</span>
+                    <h3 id="modalTitle" class="text-xl font-bold text-slate-900">Nombre del Producto</h3>
+                </div>
+                <button onclick="closeProductModal()"
+                    class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto flex-1 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div
+                        class="bg-slate-50 rounded-xl p-4 flex items-center justify-center border border-slate-100 h-64">
+                        <img id="modalImage" src="" alt="Producto"
+                            class="max-h-full max-w-full object-contain rounded-lg">
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-xs text-slate-400 font-medium block">CÓDIGO</span>
+                            <span id="modalCode"
+                                class="text-sm font-semibold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md inline-block mt-1">N/A</span>
+                        </div>
+                        <div id="modalMedidaWrap" class="hidden">
+                            <span class="text-xs text-slate-400 font-medium block">MEDIDA / ÁREA DE IMPRESIÓN</span>
+                            <span id="modalMedida"
+                                class="text-3xl font-extrabold text-brand-700 tracking-tight inline-block mt-1"></span>
+                        </div>
+                        <div>
+                            <span class="text-xs text-slate-400 font-medium block">DESCRIPCIÓN</span>
+                            <p id="modalDescription" class="text-sm text-slate-600 mt-1 leading-relaxed">Sin descripción
+                                disponible.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <!-- Printed Design Image (optional) -->
+                <div id="modalDesignSection" class="hidden">
+                    <span class="text-xs text-slate-400 font-medium block mb-2">DISEÑO A IMPRIMIR</span>
+                    <div class="bg-slate-50 rounded-xl p-4 flex items-center justify-center border border-slate-100 h-48">
+                        <img id="modalDesignImage" src="" alt="Diseño de impresión"
+                            class="max-h-full max-w-full object-contain rounded-lg"
+                            onerror="document.getElementById('modalDesignSection').classList.add('hidden')">
+                    </div>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <!-- Presentation Selector -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Seleccione
+                        Presentación</label>
+                    <div class="grid grid-cols-3 gap-3" id="presentationOptions">
+                        <!-- Estuche, Hule, Completo buttons -->
+                    </div>
+                    <p id="calculatedNote" class="text-xs text-amber-600 mt-2 hidden"><i
+                            class="fa-solid fa-circle-info mr-1"></i> El precio completo es calculado sumando Estuche +
+                        Hule.</p>
+                </div>
+
+                <!-- Quantity Selector -->
+                <div>
+                    <label
+                        class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Cantidad</label>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="adjustQuantity(-1)"
+                            class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold transition">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <span id="quantityDisplay" class="text-xl font-bold text-slate-800 w-12 text-center">1</span>
+                        <button onclick="adjustQuantity(1)"
+                            class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold transition">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end">
+                <button onclick="sendWhatsAppConsultation()"
+                    class="w-full sm:w-auto bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg shadow-brand-500/20 flex items-center justify-center space-x-2 transition transform active:scale-95">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>CONSULTAR POR WHATSAPP</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900">Acceso Administrativo</h3>
+                <button onclick="closeAdminLoginModal()"
+                    class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Correo Electrónico</label>
+                    <input type="email" id="adminEmail" required
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Contraseña</label>
+                    <input type="password" id="adminPassword" required
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <button type="submit"
+                    class="w-full bg-slate-900 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-xl transition">
+                    Ingresar al Panel
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL MODAL -->
+    <div id="adminPanelModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100 bg-slate-900 text-white">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-shield-halved text-brand-500"></i>
+                    <h3 class="text-lg font-bold">Panel de Administración de Costos y Productos</h3>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleExcelFileSelected(event)">
+                    <button onclick="document.getElementById('excelFileInput').click()"
+                        class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition border border-white/20">
+                        <i class="fa-solid fa-file-excel mr-1"></i> Importar Excel
+                    </button>
+                    <button onclick="openProductEditor(null)"
+                        class="bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition">
+                        <i class="fa-solid fa-plus mr-1"></i> Nuevo Producto
+                    </button>
+                    <button onclick="closeAdminPanel()"
+                        class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 text-xs font-semibold text-slate-400 uppercase">
+                                <th class="py-3 px-4">Producto</th>
+                                <th class="py-3 px-4">Código</th>
+                                <th class="py-3 px-4">Categoría</th>
+                                <th class="py-3 px-4">C. Estuche</th>
+                                <th class="py-3 px-4">C. Hule</th>
+                                <th class="py-3 px-4">C. Completo</th>
+                                <th class="py-3 px-4 text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminProductsTableBody" class="divide-y divide-slate-100 text-sm">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT EDITOR MODAL -->
+    <div id="productEditorModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+                <h3 id="editorModalTitle" class="text-lg font-bold text-slate-900">Editar Producto</h3>
+                <button onclick="closeProductEditor()"
+                    class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <form id="productEditorForm" onsubmit="saveProductForm(event)" class="p-6 overflow-y-auto space-y-4 flex-1">
+                <input type="hidden" id="editId">
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Nombre del Producto</label>
+                    <input type="text" id="editName" required
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Código</label>
+                        <input type="text" id="editCode"
+                            class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Categoría</label>
+                        <input type="text" id="editCategory" list="categoryDatalist" required
+                            oninput="autoGenerateDescription()"
+                            class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
+                            placeholder="Escribe o elige una existente">
+                        <datalist id="categoryDatalist"></datalist>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Medida / Área de Impresión</label>
+                    <input type="text" id="editMedida" oninput="autoGenerateDescription()"
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
+                        placeholder="Ej: 3.7 x 1.3 cm">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">Descripción
+                        <span class="text-slate-400 font-normal normal-case">(se genera automáticamente con Categoría
+                            + Medida, pero puedes editarla)</span>
+                    </label>
+                    <textarea id="editDescription" rows="2" oninput="descriptionEditedManually = true"
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">URL de Imagen</label>
+                    <input type="text" id="editImage" required oninput="updateImagePreview(this.value)"
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
+                        placeholder="Pega aquí la URL de la imagen (Google Drive o Google Imágenes)">
+                    <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                        <i class="fa-solid fa-circle-info mr-1"></i>
+                        Si es de <b>Google Imágenes</b>: haz clic derecho sobre la foto → "Copiar dirección de la
+                        imagen" (no el enlace de la página). Si es de <b>Google Drive</b>: comparte el archivo como
+                        "Cualquier persona con el enlace" y pega ese link; el sistema lo convierte automáticamente.
+                    </p>
+                    <div id="imagePreviewWrap" class="mt-2 hidden bg-slate-50 border border-slate-200 rounded-xl p-3 h-32 flex items-center justify-center">
+                        <img id="imagePreview" src="" alt="Vista previa"
+                            class="max-h-full max-w-full object-contain rounded-lg"
+                            onerror="document.getElementById('imagePreviewError').classList.remove('hidden'); this.classList.add('hidden')"
+                            onload="document.getElementById('imagePreviewError').classList.add('hidden'); this.classList.remove('hidden')">
+                        <span id="imagePreviewError" class="hidden text-xs text-rose-500 text-center px-2">
+                            <i class="fa-solid fa-triangle-exclamation block text-lg mb-1"></i>
+                            No se pudo cargar la imagen con esa URL.
+                        </span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-600 mb-1">URL Imagen del Diseño a Imprimir
+                        <span class="text-slate-400 font-normal normal-case">(opcional, se muestra al ver el
+                            producto)</span>
+                    </label>
+                    <input type="text" id="editImageDesign" oninput="updateDesignImagePreview(this.value)"
+                        class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
+                        placeholder="Pega aquí la URL del diseño (Google Drive o Google Imágenes)">
+                    <div id="designImagePreviewWrap" class="mt-2 hidden bg-slate-50 border border-slate-200 rounded-xl p-3 h-32 flex items-center justify-center">
+                        <img id="designImagePreview" src="" alt="Vista previa del diseño"
+                            class="max-h-full max-w-full object-contain rounded-lg"
+                            onerror="document.getElementById('designImagePreviewError').classList.remove('hidden'); this.classList.add('hidden')"
+                            onload="document.getElementById('designImagePreviewError').classList.add('hidden'); this.classList.remove('hidden')">
+                        <span id="designImagePreviewError" class="hidden text-xs text-rose-500 text-center px-2">
+                            <i class="fa-solid fa-triangle-exclamation block text-lg mb-1"></i>
+                            No se pudo cargar la imagen con esa URL.
+                        </span>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Costo Estuche ($)</label>
+                        <input type="number" step="0.01" id="editCostoEstuche" oninput="autoCalcCostoCompleto()"
+                            class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
+                            value="0.00">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Costo Hule ($)</label>
+                        <input type="number" step="0.01" id="editCostoHule" oninput="autoCalcCostoCompleto()"
+                            class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
+                            value="0.00">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Costo Completo ($)
+                            <span class="text-slate-400 font-normal normal-case block">Auto: Estuche + Hule</span>
+                        </label>
+                        <input type="number" step="0.01" id="editCostoCompleto" oninput="costoCompletoEditedManually = true"
+                            class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
+                            value="0.00">
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 pt-2">
+                    <input type="checkbox" id="editAvailable"
+                        class="w-4 h-4 text-brand-600 border-slate-300 rounded focus:ring-brand-500" checked>
+                    <label for="editAvailable" class="text-sm font-medium text-slate-700">Producto Disponible</label>
+                </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeProductEditor()"
+                        class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Cancelar</button>
+                    <button type="submit"
+                        class="px-6 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition shadow-md">Guardar
+                        Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- EXCEL IMPORT PREVIEW MODAL -->
+    <div id="importModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-3xl w-full mx-4 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Importar Productos desde Excel</h3>
+                    <p id="importFileName" class="text-xs text-slate-500 mt-0.5"></p>
+                </div>
+                <button onclick="closeImportModal()"
+                    class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 space-y-4">
+                <div class="bg-amber-50 border border-amber-200 text-amber-700 text-xs rounded-xl p-3">
+                    <i class="fa-solid fa-circle-info mr-1"></i>
+                    El Excel debe tener las columnas <b>CODIGO, DESCRIPCION, MEDIDA, ESTUCHE, HULE, COMPLETO</b>. La
+                    imagen se agrega como marcador de posición; luego edita cada producto para poner su URL de
+                    imagen real.
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-600 mb-1">Categoría para todos los
+                            productos de este archivo</label>
+                        <input type="text" id="importCategory" list="categoryDatalist" required
+                            class="w-full px-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500"
+                            placeholder="Escribe o elige una existente">
+                    </div>
+                    <div class="flex items-end">
+                        <span id="importCount" class="text-sm font-medium text-slate-500 bg-slate-100 px-3 py-2 rounded-xl w-full text-center"></span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-200 font-semibold text-slate-400 uppercase bg-slate-50">
+                                <th class="py-2 px-3">Código</th>
+                                <th class="py-2 px-3">Nombre (Descripción)</th>
+                                <th class="py-2 px-3">Medida</th>
+                                <th class="py-2 px-3">Estuche</th>
+                                <th class="py-2 px-3">Hule</th>
+                                <th class="py-2 px-3">Completo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="importPreviewTableBody" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end space-x-3">
+                <button type="button" onclick="closeImportModal()"
+                    class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-sm font-semibold transition">Cancelar</button>
+                <button type="button" onclick="confirmExcelImport()" id="confirmImportBtn"
+                    class="px-6 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold transition shadow-md">
+                    <i class="fa-solid fa-upload mr-1"></i> Importar Productos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIREBASE AND APP LOGIC -->
+    <script type="module">
+        import {initializeApp} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import {getAuth, signInAnonymously, signInWithEmailAndPassword, onAuthStateChanged} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import {getFirestore, collection, doc, getDocs, setDoc, deleteDoc} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Configuration provided by user
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2UC2-q9oCTdXyl0vPd1dK-Vmngqwh170",
+            authDomain: "evodig-fb6a6.firebaseapp.com",
+            projectId: "evodig-fb6a6",
+            storageBucket: "evodig-fb6a6.firebasestorage.app",
+            messagingSenderId: "782666781275",
+            appId: "1:782666781275:web:9652c1e05a03c1961a657e",
+            measurementId: "G-18LXW81E24"
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'todo-laser-catalog-2026';
+        const WHATSAPP_NUMBER = "50373761924"; // Modify with actual WhatsApp number as requested
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Initial PDF Extracted Products Dataset
+        const initialProducts = [
+            {
+                id: "prod-1",
+                nombre: "Trodat Printy 4911",
+                codigo: "TRODAT 4911",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático compacto ideal para firmas y datos cortos. Área de impresión: 3.8 x 1.4 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+4911",
+                costo_estuche: 6.50,
+                costo_hule: 1.50,
+                costo_completo: 8.00,
+                disponible: true
+            },
+            {
+                id: "prod-2",
+                nombre: "Colop Printer P-20",
+                codigo: "COLOP P-20",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático autoentintable de alta durabilidad. Área de impresión: 3.7 x 1.3 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Colop+P-20",
+                costo_estuche: 5.00,
+                costo_hule: 1.50,
+                costo_completo: 6.50,
+                disponible: true
+            },
+            {
+                id: "prod-3",
+                nombre: "Trodat Eco 3911",
+                codigo: "TRODAT ECO 3911",
+                categoria: "Sellos Automáticos",
+                descripcion: "Línea ecológica de sellos automáticos Trodat. Área de impresión: 3.8 x 1.4 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+Eco+3911",
+                costo_estuche: 5.50,
+                costo_hule: 1.50,
+                costo_completo: 7.00,
+                disponible: true
+            },
+            {
+                id: "prod-4",
+                nombre: "Epress 3814",
+                codigo: "EPRESS 3814",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático Epress con excelente relación calidad-precio.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Epress+3814",
+                costo_estuche: 3.75,
+                costo_hule: 1.50,
+                costo_completo: 5.25,
+                disponible: true
+            },
+            {
+                id: "prod-5",
+                nombre: "Traxx 9011",
+                codigo: "TRAXX 9011",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático Traxx compacto para uso profesional.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Traxx+9011",
+                costo_estuche: 4.00,
+                costo_hule: 1.50,
+                costo_completo: 5.50,
+                disponible: true
+            },
+            {
+                id: "prod-6",
+                nombre: "Trodat Printy 4912",
+                codigo: "TRODAT 4912",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático de tamaño mediano muy popular. Área de impresión: 4.7 x 1.8 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+4912",
+                costo_estuche: 8.25,
+                costo_hule: 2.00,
+                costo_completo: 10.25,
+                disponible: true
+            },
+            {
+                id: "prod-7",
+                nombre: "Colop Printer P-30",
+                codigo: "COLOP P-30",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático mediano Colop. Área de impresión: 4.7 x 1.8 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Colop+P-30",
+                costo_estuche: 6.75,
+                costo_hule: 2.00,
+                costo_completo: 8.75,
+                disponible: true
+            },
+            {
+                id: "prod-8",
+                nombre: "Trodat Eco 3912",
+                codigo: "TRODAT ECO 3912",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello ecológico Trodat formato mediano. Área de impresión: 4.7 x 1.8 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+Eco+3912",
+                costo_estuche: 6.50,
+                costo_hule: 2.00,
+                costo_completo: 8.50,
+                disponible: true
+            },
+            {
+                id: "prod-9",
+                nombre: "Epress 4718",
+                codigo: "EPRESS 4718",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático Epress formato mediano para profesionales y médicos.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Epress+4718",
+                costo_estuche: 4.50,
+                costo_hule: 2.00,
+                costo_completo: 6.50,
+                disponible: true
+            },
+            {
+                id: "prod-10",
+                nombre: "Traxx 9012",
+                codigo: "TRAXX 9012",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático Traxx formato mediano.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Traxx+9012",
+                costo_estuche: 4.50,
+                costo_hule: 2.00,
+                costo_completo: 6.50,
+                disponible: true
+            },
+            {
+                id: "prod-11",
+                nombre: "Trodat Printy 4913",
+                codigo: "TRODAT 4913",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático grande Trodat. Área de impresión: 5.8 x 2.2 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+4913",
+                costo_estuche: 8.50,
+                costo_hule: 2.50,
+                costo_completo: 11.00,
+                disponible: true
+            },
+            {
+                id: "prod-12",
+                nombre: "Colop Printer 40",
+                codigo: "COLOP 40",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático grande Colop. Área de impresión: 5.8 x 2.0 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Colop+Printer+40",
+                costo_estuche: 7.50,
+                costo_hule: 2.50,
+                costo_completo: 10.00,
+                disponible: true
+            },
+            {
+                id: "prod-13",
+                nombre: "Traxx 9013",
+                codigo: "TRAXX 9013",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático Traxx grande.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Traxx+9013",
+                costo_estuche: 5.50,
+                costo_hule: 2.50,
+                costo_completo: 8.00,
+                disponible: true
+            },
+            {
+                id: "prod-14",
+                nombre: "Trodat Eco 3913",
+                codigo: "TRODAT ECO 3913",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello ecológico Trodat grande.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+Eco+3913",
+                costo_estuche: 6.50,
+                costo_hule: 2.50,
+                costo_completo: 9.00,
+                disponible: true
+            },
+            {
+                id: "prod-15",
+                nombre: "Trodat Printy 4914",
+                codigo: "TRODAT 4914",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático rectangular grande para arquitectos e ingenieros. Área: 6.4 x 2.6 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+4914",
+                costo_estuche: 9.25,
+                costo_hule: 2.75,
+                costo_completo: 12.00,
+                disponible: true
+            },
+            {
+                id: "prod-16",
+                nombre: "Trodat Printy 4915",
+                codigo: "TRODAT 4915",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático de gran formato. Área de impresión: 7.0 x 2.5 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+4915",
+                costo_estuche: 10.50,
+                costo_hule: 3.50,
+                costo_completo: 14.00,
+                disponible: true
+            },
+            {
+                id: "prod-17",
+                nombre: "Colop Printer 50",
+                codigo: "COLOP 50",
+                categoria: "Sellos Automáticos",
+                descripcion: "Sello automático grande Colop 50.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Colop+Printer+50",
+                costo_estuche: 9.00,
+                costo_hule: 3.50,
+                costo_completo: 12.50,
+                disponible: true
+            },
+            {
+                id: "prod-18",
+                nombre: "Trodat 4630 (Redondo)",
+                codigo: "TRODAT 4630",
+                categoria: "Sellos Redondos",
+                descripcion: "Sello automático redondo Trodat. Diámetro: 3.0 x 3.0 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+4630",
+                costo_estuche: 8.25,
+                costo_hule: 2.25,
+                costo_completo: 10.50,
+                disponible: true
+            },
+            {
+                id: "prod-19",
+                nombre: "Epress R-0030",
+                codigo: "EPRESS R-0030",
+                categoria: "Sellos Redondos",
+                descripcion: "Sello automático redondo Epress. Diámetro: 3.0 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Epress+R-0030",
+                costo_estuche: 6.25,
+                costo_hule: 2.25,
+                costo_completo: 8.50,
+                disponible: true
+            },
+            {
+                id: "prod-20",
+                nombre: "Colop Printer R-30",
+                codigo: "COLOP R-30",
+                categoria: "Sellos Redondos",
+                descripcion: "Sello automático redondo Colop R-30. Diámetro: 3.0 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Colop+R-30",
+                costo_estuche: 6.75,
+                costo_hule: 2.25,
+                costo_completo: 9.00,
+                disponible: true
+            },
+            {
+                id: "prod-21",
+                nombre: "Traxx 9130",
+                codigo: "TRAXX 9130",
+                categoria: "Sellos Redondos",
+                descripcion: "Sello automático redondo Traxx.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Traxx+9130",
+                costo_estuche: 6.50,
+                costo_hule: 4.00,
+                costo_completo: 10.50,
+                disponible: true
+            },
+            {
+                id: "prod-22",
+                nombre: "Trodat 9511 (Portátil)",
+                codigo: "TRODAT 9511",
+                categoria: "Sellos Portátiles",
+                descripcion: "Sello de bolsillo portátil Trodat medida 11.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+9511",
+                costo_estuche: 6.95,
+                costo_hule: 1.50,
+                costo_completo: 8.45,
+                disponible: true
+            },
+            {
+                id: "prod-23",
+                nombre: "Colop Pocket Stamp 20",
+                codigo: "COLOP POCKET 20",
+                categoria: "Sellos Portátiles",
+                descripcion: "Sello de bolsillo Colop Pocket 20.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Colop+Pocket+20",
+                costo_estuche: 5.00,
+                costo_hule: 1.50,
+                costo_completo: 6.50,
+                disponible: true
+            },
+            {
+                id: "prod-24",
+                nombre: "Shiny 722 (Portátil)",
+                codigo: "SHINY 722",
+                categoria: "Sellos Portátiles",
+                descripcion: "Sello portátil Shiny Handy Stamp.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Shiny+722",
+                costo_estuche: 6.00,
+                costo_hule: 1.50,
+                costo_completo: 7.50,
+                disponible: true
+            },
+            {
+                id: "prod-25",
+                nombre: "Trodat 4750 (Fechador)",
+                codigo: "TRODAT 4750",
+                categoria: "Sellos Fechadores",
+                descripcion: "Sello automático con fechador integrado Trodat.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Trodat+4750",
+                costo_estuche: 17.15,
+                costo_hule: 2.00,
+                costo_completo: 19.15,
+                disponible: true
+            },
+            {
+                id: "prod-26",
+                nombre: "Colop Printer 60 Dater",
+                codigo: "COLOP 60-DATER",
+                categoria: "Sellos Fechadores",
+                descripcion: "Sello fechador grande Colop Printer 60.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Colop+60+Dater",
+                costo_estuche: 18.00,
+                costo_hule: 4.00,
+                costo_completo: 21.00,
+                disponible: true
+            },
+            {
+                id: "prod-27",
+                nombre: "Almohadilla Office Mate",
+                codigo: "OFFICE MATE",
+                categoria: "Almohadillas y Tintas",
+                descripcion: "Almohadilla para sellos manuales medida 10.0 x 6.5 cm.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Almohadilla+Office+Mate",
+                costo_estuche: 1.75,
+                costo_hule: 0.00,
+                costo_completo: 1.75,
+                disponible: true
+            },
+            {
+                id: "prod-28",
+                nombre: "Tinta Trodat 50cc",
+                codigo: "TINTA TRODAT",
+                categoria: "Almohadillas y Tintas",
+                descripcion: "Tinta especial Trodat en presentación de 50cc (Azul, Negro, Rojo, Verde, Morado).",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Tinta+Trodat",
+                costo_estuche: 3.25,
+                costo_hule: 0.00,
+                costo_completo: 3.25,
+                disponible: true
+            },
+            {
+                id: "prod-29",
+                nombre: "Foliador Traxx 6 Dígitos",
+                codigo: "FOLIADOR TRAXX",
+                categoria: "Foliadores y Numeradores",
+                descripcion: "Foliador automático de 6 dígitos metálico de alta resistencia.",
+                imagen: "https://placehold.co/400x300/f8fafc/1e293b?text=Foliador+Traxx",
+                costo_estuche: 22.00,
+                costo_hule: 0.00,
+                costo_completo: 22.00,
+                disponible: true
+            }
+        ];
+
+        let products = [];
+        let currentCategory = 'Todos';
+        let searchQuery = '';
+        let selectedProduct = null;
+        let selectedPresentation = 'COMPLETO';
+        let currentQuantity = 1;
+        let currentUser = null;
+        let descriptionEditedManually = false;
+        let costoCompletoEditedManually = false;
+        let pendingImportRows = [];
+
+        // Converts URLs pasted from Google Drive or Google Images (which are page/redirect
+        // links, not direct image files) into a direct-loadable image URL.
+        function getDirectImageUrl(url) {
+            if (!url) return url;
+            const clean = url.trim();
+
+            // Google Drive share link -> https://drive.google.com/file/d/FILE_ID/view...
+            let match = clean.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+            if (match) {
+                return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+            }
+            // Google Drive open link -> https://drive.google.com/open?id=FILE_ID
+            match = clean.match(/drive\.google\.com\/open\?id=([^&]+)/);
+            if (match) {
+                return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+            }
+            // Already a Drive uc/thumbnail link -> leave as-is
+            if (/drive\.google\.com\/(uc|thumbnail)/.test(clean)) {
+                return clean;
+            }
+            // Google Images result page link (imgres?...&imgurl=ENCODED_URL&...)
+            match = clean.match(/[?&]imgurl=([^&]+)/);
+            if (match) {
+                return decodeURIComponent(match[1]);
+            }
+            // Anything else (already a direct image URL) -> use as-is
+            return clean;
+        }
+
+        window.updateImagePreview = function (rawUrl) {
+            const wrap = document.getElementById('imagePreviewWrap');
+            const img = document.getElementById('imagePreview');
+            const errorLabel = document.getElementById('imagePreviewError');
+            const url = getDirectImageUrl(rawUrl);
+            if (!url) {
+                wrap.classList.add('hidden');
+                return;
+            }
+            wrap.classList.remove('hidden');
+            errorLabel.classList.add('hidden');
+            img.classList.remove('hidden');
+            img.src = url;
+        }
+
+        window.updateDesignImagePreview = function (rawUrl) {
+            const wrap = document.getElementById('designImagePreviewWrap');
+            const img = document.getElementById('designImagePreview');
+            const errorLabel = document.getElementById('designImagePreviewError');
+            const url = getDirectImageUrl(rawUrl);
+            if (!url) {
+                wrap.classList.add('hidden');
+                return;
+            }
+            wrap.classList.remove('hidden');
+            errorLabel.classList.add('hidden');
+            img.classList.remove('hidden');
+            img.src = url;
+        }
+
+        // Fills the <datalist> used by the Category fields (product editor + import modal)
+        // with the categories that already exist, so the admin can pick instead of retyping.
+        function populateCategoryDatalist() {
+            const datalist = document.getElementById('categoryDatalist');
+            const categories = [...new Set(products.map(p => p.categoria).filter(Boolean))].sort();
+            datalist.innerHTML = categories.map(c => `<option value="${c}"></option>`).join('');
+        }
+
+        // Auto-builds "Descripción" as "{Categoría}. Área de impresión: {Medida}." while the
+        // admin hasn't typed into the description box themselves.
+        window.autoGenerateDescription = function () {
+            if (descriptionEditedManually) return;
+            const categoria = document.getElementById('editCategory').value.trim();
+            const medida = document.getElementById('editMedida').value.trim();
+            let text = categoria || '';
+            if (medida) text += (text ? '. ' : '') + `Área de impresión: ${medida}`;
+            if (text && !text.endsWith('.')) text += '.';
+            document.getElementById('editDescription').value = text;
+        }
+
+        // Auto-calculates "Costo Completo" as Estuche + Hule while the admin hasn't typed
+        // into that field themselves.
+        window.autoCalcCostoCompleto = function () {
+            if (costoCompletoEditedManually) return;
+            const estuche = parseFloat(document.getElementById('editCostoEstuche').value) || 0;
+            const hule = parseFloat(document.getElementById('editCostoHule').value) || 0;
+            document.getElementById('editCostoCompleto').value = (estuche + hule).toFixed(2);
+        }
+
+        // ---- Excel bulk import ----
+        window.handleExcelFileSelected = function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(firstSheet, { defval: '' });
+
+                    // Normalize column names (case/accents/spacing insensitive) so headers
+                    // like "Código", "codigo", "MEDIDA " all map correctly.
+                    const normalizeKey = (k) => k.toString().trim().toUpperCase()
+                        .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+                    pendingImportRows = rows.map(row => {
+                        const norm = {};
+                        Object.keys(row).forEach(k => norm[normalizeKey(k)] = row[k]);
+                        return {
+                            codigo: (norm['CODIGO'] || '').toString().trim(),
+                            nombre: (norm['DESCRIPCION'] || norm['DESCRIPCIÓN'] || norm['NOMBRE'] || '').toString().trim(),
+                            medida: (norm['MEDIDA'] || '').toString().trim(),
+                            costo_estuche: parseFloat(norm['ESTUCHE']) || 0,
+                            costo_hule: parseFloat(norm['HULE']) || 0,
+                            costo_completo: parseFloat(norm['COMPLETO']) || 0
+                        };
+                    }).filter(r => r.codigo || r.nombre); // skip fully empty rows
+
+                    if (pendingImportRows.length === 0) {
+                        alert('No se encontraron filas válidas en el archivo. Verifica que tenga las columnas CODIGO, DESCRIPCION, MEDIDA, ESTUCHE, HULE, COMPLETO.');
+                        return;
+                    }
+
+                    document.getElementById('importFileName').innerText = file.name;
+                    renderImportPreview();
+                    populateCategoryDatalist();
+                    document.getElementById('importCategory').value = '';
+                    document.getElementById('adminPanelModal').classList.add('opacity-0', 'pointer-events-none');
+                    document.getElementById('importModal').classList.remove('opacity-0', 'pointer-events-none');
+                } catch (err) {
+                    alert('No se pudo leer el archivo Excel: ' + err.message);
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function renderImportPreview() {
+            const tbody = document.getElementById('importPreviewTableBody');
+            document.getElementById('importCount').innerText = `${pendingImportRows.length} productos detectados`;
+            tbody.innerHTML = pendingImportRows.map(r => `
+                <tr>
+                    <td class="py-2 px-3 font-semibold text-slate-700">${r.codigo || 'N/A'}</td>
+                    <td class="py-2 px-3">${r.nombre || 'N/A'}</td>
+                    <td class="py-2 px-3">${r.medida || '-'}</td>
+                    <td class="py-2 px-3">$${r.costo_estuche.toFixed(2)}</td>
+                    <td class="py-2 px-3">$${r.costo_hule.toFixed(2)}</td>
+                    <td class="py-2 px-3">$${(r.costo_completo > 0 ? r.costo_completo : (r.costo_estuche + r.costo_hule)).toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        window.closeImportModal = function () {
+            pendingImportRows = [];
+            document.getElementById('importModal').classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('adminPanelModal').classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        window.confirmExcelImport = async function () {
+            const categoria = document.getElementById('importCategory').value.trim();
+            if (!categoria) {
+                alert('Escribe o elige una categoría para los productos que vas a importar.');
+                return;
+            }
+            if (pendingImportRows.length === 0) return;
+
+            const btn = document.getElementById('confirmImportBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-1"></i> Importando...';
+
+            try {
+                let i = 0;
+                for (const row of pendingImportRows) {
+                    i++;
+                    const costoCompleto = row.costo_completo > 0 ? row.costo_completo : (row.costo_estuche + row.costo_hule);
+                    let descripcion = categoria;
+                    if (row.medida) descripcion += `. Área de impresión: ${row.medida}`;
+                    if (!descripcion.endsWith('.')) descripcion += '.';
+
+                    const newProduct = {
+                        id: 'prod-' + Date.now() + '-' + i,
+                        nombre: row.nombre || row.codigo || 'Producto sin nombre',
+                        codigo: row.codigo,
+                        categoria: categoria,
+                        descripcion: descripcion,
+                        medida: row.medida,
+                        imagen: 'https://placehold.co/400x300/f8fafc/1e293b?text=' + encodeURIComponent(row.codigo || row.nombre || 'Sello'),
+                        imagen_diseno: '',
+                        costo_estuche: row.costo_estuche,
+                        costo_hule: row.costo_hule,
+                        costo_completo: costoCompleto,
+                        disponible: true
+                    };
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'productos', newProduct.id), newProduct);
+                }
+
+                await loadProductsFromFirebase();
+                renderCategories();
+                renderProducts();
+                renderAdminProductsTable();
+                populateCategoryDatalist();
+                pendingImportRows = [];
+                document.getElementById('importModal').classList.add('opacity-0', 'pointer-events-none');
+                alert(`Se importaron ${i} productos correctamente. Ahora puedes editar cada uno para agregar su URL de imagen real.`);
+            } catch (err) {
+                alert('Error al importar: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-upload mr-1"></i> Importar Productos';
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Authenticate anonymously or load from custom token
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.warn("Auth warning:", e);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                currentUser = user;
+            });
+
+            await loadProductsFromFirebase();
+            renderCategories();
+            renderProducts();
+            populateCategoryDatalist();
+        });
+
+        async function loadProductsFromFirebase() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'artifacts', appId, 'public', 'data', 'productos'));
+                if (querySnapshot.empty) {
+                    // Seed initial products if none exist
+                    products = initialProducts;
+                    for (const p of products) {
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'productos', p.id), p);
+                    }
+                } else {
+                    products = [];
+                    querySnapshot.forEach((docSnap) => {
+                        products.push({id: docSnap.id, ...docSnap.data()});
+                    });
+                }
+            } catch (err) {
+                console.warn("Firestore offline or unavailable, using local default dataset:", err);
+                products = initialProducts;
+            }
+        }
+
+        function renderCategories() {
+            const categories = ['Todos', ...new Set(products.map(p => p.categoria))];
+            const container = document.getElementById('categoryTabs');
+            container.innerHTML = categories.map(cat => `
+                <button onclick="selectCategory('${cat}')" class="whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-semibold transition shadow-sm ${currentCategory === cat ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'}">
+                    ${cat}
+                </button>
+            `).join('');
+        }
+
+        window.selectCategory = function (cat) {
+            currentCategory = cat;
+            renderCategories();
+            renderProducts();
+        }
+
+        window.handleSearch = function (val) {
+            searchQuery = val.toLowerCase().trim();
+            renderProducts();
+        }
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const countLabel = document.getElementById('productCount');
+            const titleLabel = document.getElementById('categoryTitle');
+
+            titleLabel.innerText = currentCategory === 'Todos' ? 'Todos los Productos' : currentCategory;
+
+            const filtered = products.filter(p => {
+                if (!p.disponible) return false;
+                const matchesCat = currentCategory === 'Todos' || p.categoria === currentCategory;
+                const matchesSearch = !searchQuery ||
+                    p.nombre.toLowerCase().includes(searchQuery) ||
+                    (p.codigo && p.codigo.toLowerCase().includes(searchQuery)) ||
+                    p.categoria.toLowerCase().includes(searchQuery);
+                return matchesCat && matchesSearch;
+            });
+
+            countLabel.innerText = `${filtered.length} productos`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                return;
+            }
+
+            emptyState.classList.remove('flex');
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition duration-300 overflow-hidden flex flex-col group">
+                    <div class="bg-slate-50 p-4 flex items-center justify-center h-64 relative overflow-hidden">
+                        <img src="${getDirectImageUrl(p.imagen)}" alt="${p.nombre}" onerror="this.src='https://placehold.co/400x300/f8fafc/1e293b?text=Sello'" class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-300">
+                        ${p.codigo ? `<span class="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-md tracking-wider">${p.codigo}</span>` : ''}
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col justify-between">
+                        <div>
+                            <span class="text-[11px] font-semibold text-brand-600 uppercase tracking-wider">${p.categoria}</span>
+                            <h3 class="text-base font-bold text-slate-900 mt-1 line-clamp-1">${p.nombre}</h3>
+                            <p class="text-base font-bold text-brand-700 mt-1.5 leading-relaxed">${p.medida ? `<i class="fa-solid fa-ruler-combined mr-1"></i>${p.medida}` : 'Medida no especificada'}</p>
+                        </div>
+                        <div class="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-xs text-slate-400 font-medium"><i class="fa-solid fa-circle-check text-brand-500 mr-1"></i> Disponible</span>
+                            <button onclick="openProductModal('${p.id}')" class="bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-md transition active:scale-95">
+                                Ver Producto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.openProductModal = function (id) {
+            selectedProduct = products.find(p => p.id === id);
+            if (!selectedProduct) return;
+
+            selectedPresentation = selectedProduct.costo_hule > 0 ? 'COMPLETO' : 'ESTUCHE';
+            currentQuantity = 1;
+
+            document.getElementById('modalCategory').innerText = selectedProduct.categoria;
+            document.getElementById('modalTitle').innerText = selectedProduct.nombre;
+            document.getElementById('modalCode').innerText = selectedProduct.codigo || 'SIN CÓDIGO';
+            document.getElementById('modalDescription').innerText = selectedProduct.descripcion || 'Sin descripción detallada.';
+
+            const medidaWrap = document.getElementById('modalMedidaWrap');
+            if (selectedProduct.medida) {
+                medidaWrap.classList.remove('hidden');
+                document.getElementById('modalMedida').innerText = selectedProduct.medida;
+            } else {
+                medidaWrap.classList.add('hidden');
+            }
+            document.getElementById('modalImage').src = getDirectImageUrl(selectedProduct.imagen);
+            document.getElementById('modalImage').onerror = function () { this.src = 'https://placehold.co/400x300/f8fafc/1e293b?text=Sello'; };
+            document.getElementById('quantityDisplay').innerText = currentQuantity;
+
+            const designSection = document.getElementById('modalDesignSection');
+            const designImage = document.getElementById('modalDesignImage');
+            if (selectedProduct.imagen_diseno) {
+                designSection.classList.remove('hidden');
+                designImage.src = getDirectImageUrl(selectedProduct.imagen_diseno);
+            } else {
+                designSection.classList.add('hidden');
+                designImage.src = '';
+            }
+
+            renderPresentations();
+
+            const modal = document.getElementById('productModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            document.getElementById('modalContentWrapper').classList.remove('scale-95');
+            document.getElementById('modalContentWrapper').classList.add('scale-100');
+        }
+
+        window.closeProductModal = function () {
+            const modal = document.getElementById('productModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            document.getElementById('modalContentWrapper').classList.remove('scale-100');
+            document.getElementById('modalContentWrapper').classList.add('scale-95');
+        }
+
+        function renderPresentations() {
+            const container = document.getElementById('presentationOptions');
+            const note = document.getElementById('calculatedNote');
+
+            let options = [];
+            if (selectedProduct.costo_estuche > 0) options.push('ESTUCHE');
+            if (selectedProduct.costo_hule > 0) options.push('HULE');
+            if (selectedProduct.costo_completo > 0 || (selectedProduct.costo_estuche > 0 && selectedProduct.costo_hule > 0)) options.push('COMPLETO');
+
+            if (options.length === 0) options = ['ESTUCHE'];
+
+            container.innerHTML = options.map(opt => `
+                <button type="button" onclick="selectPresentation('${opt}')" class="py-3 px-4 rounded-xl text-xs font-bold transition border ${selectedPresentation === opt ? 'bg-brand-600 text-white border-brand-600 shadow-md shadow-brand-500/20' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}">
+                    ${opt}
+                </button>
+            `).join('');
+
+            if (selectedPresentation === 'COMPLETO' && selectedProduct.costo_estuche > 0 && selectedProduct.costo_hule > 0) {
+                note.classList.remove('hidden');
+            } else {
+                note.classList.add('hidden');
+            }
+        }
+
+        window.selectPresentation = function (pres) {
+            selectedPresentation = pres;
+            renderPresentations();
+        }
+
+        window.adjustQuantity = function (change) {
+            currentQuantity += change;
+            if (currentQuantity < 1) currentQuantity = 1;
+            document.getElementById('quantityDisplay').innerText = currentQuantity;
+        }
+
+        window.sendWhatsAppConsultation = function () {
+            if (!selectedProduct) return;
+
+            let unitCost = 0;
+            let presentationDesc = selectedPresentation;
+
+            if (selectedPresentation === 'ESTUCHE') {
+                unitCost = selectedProduct.costo_estuche;
+            } else if (selectedPresentation === 'HULE') {
+                unitCost = selectedProduct.costo_hule;
+            } else if (selectedPresentation === 'COMPLETO') {
+                unitCost = selectedProduct.costo_completo > 0 ? selectedProduct.costo_completo : (selectedProduct.costo_estuche + selectedProduct.costo_hule);
+            }
+
+            const totalCost = unitCost * currentQuantity;
+
+            // Suggested resale price: 100%-120% profit margin over cost
+            const suggestedUnitMin = unitCost * 2.0;
+            const suggestedUnitMax = unitCost * 2.2;
+            const suggestedTotalMin = suggestedUnitMin * currentQuantity;
+            const suggestedTotalMax = suggestedUnitMax * currentQuantity;
+
+            // Generate WhatsApp message containing internal costs as requested
+            const message = `🛒 CONSULTA DE CATÁLOGO\n📦 Producto: ${selectedProduct.nombre}\n🔢 Código: ${selectedProduct.codigo || 'N/A'}\n🔹 Presentación: ${presentationDesc}\n📦 Incluye: ${presentationDesc === 'COMPLETO' ? 'Estuche + Hule' : presentationDesc}\n🔢 Cantidad: ${currentQuantity}\n💰 Mi costo unitario: $${unitCost.toFixed(2)}\n💵 Mi costo total: $${totalCost.toFixed(2)}\n📈 Precio de venta sugerido (margen 100%-120%): $${suggestedUnitMin.toFixed(2)} - $${suggestedUnitMax.toFixed(2)} c/u\n💵 Total de venta sugerido: $${suggestedTotalMin.toFixed(2)} - $${suggestedTotalMax.toFixed(2)}`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, '_blank');
+            closeProductModal();
+        }
+
+        window.resetCatalog = function () {
+            currentCategory = 'Todos';
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearchInput').value = '';
+            renderCategories();
+            renderProducts();
+        }
+
+        // Admin Panel Functions
+        window.openAdminLoginModal = function () {
+            const modal = document.getElementById('adminLoginModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        window.closeAdminLoginModal = function () {
+            const modal = document.getElementById('adminLoginModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        window.handleAdminLogin = async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                closeAdminLoginModal();
+                openAdminPanel();
+            } catch (err) {
+                alert("Credenciales incorrectas o error de autenticación.");
+            }
+        }
+
+        window.openAdminPanel = function () {
+            renderAdminProductsTable();
+            const modal = document.getElementById('adminPanelModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        window.closeAdminPanel = function () {
+            const modal = document.getElementById('adminPanelModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        function renderAdminProductsTable() {
+            const tbody = document.getElementById('adminProductsTableBody');
+            tbody.innerHTML = products.map(p => `
+                <tr class="hover:bg-slate-50">
+                    <td class="py-3 px-4 font-semibold text-slate-800">${p.nombre}</td>
+                    <td class="py-3 px-4 text-slate-500">${p.codigo || 'N/A'}</td>
+                    <td class="py-3 px-4 text-slate-500">${p.categoria}</td>
+                    <td class="py-3 px-4 text-slate-700">$${(p.costo_estuche || 0).toFixed(2)}</td>
+                    <td class="py-3 px-4 text-slate-700">$${(p.costo_hule || 0).toFixed(2)}</td>
+                    <td class="py-3 px-4 text-slate-700 font-bold">$${(p.costo_completo || (p.costo_estuche + p.costo_hule)).toFixed(2)}</td>
+                    <td class="py-3 px-4 text-right space-x-2">
+                        <button onclick="openProductEditor('${p.id}')" class="text-brand-600 hover:text-brand-800 font-semibold text-xs"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteProductItem('${p.id}')" class="text-rose-500 hover:text-rose-700 font-semibold text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.openProductEditor = function (id) {
+            const modal = document.getElementById('productEditorModal');
+            const form = document.getElementById('productEditorForm');
+            form.reset();
+            populateCategoryDatalist();
+
+            if (id) {
+                const p = products.find(prod => prod.id === id);
+                if (p) {
+                    // Existing product: description/costo completo were set intentionally
+                    // before, so don't let category/estuche/hule edits silently overwrite them.
+                    descriptionEditedManually = true;
+                    costoCompletoEditedManually = true;
+
+                    document.getElementById('editorModalTitle').innerText = 'Editar Producto';
+                    document.getElementById('editId').value = p.id;
+                    document.getElementById('editName').value = p.nombre;
+                    document.getElementById('editCode').value = p.codigo || '';
+                    document.getElementById('editCategory').value = p.categoria;
+                    document.getElementById('editMedida').value = p.medida || '';
+                    document.getElementById('editDescription').value = p.descripcion || '';
+                    document.getElementById('editImage').value = p.imagen;
+                    updateImagePreview(p.imagen);
+                    document.getElementById('editImageDesign').value = p.imagen_diseno || '';
+                    updateDesignImagePreview(p.imagen_diseno || '');
+                    document.getElementById('editCostoEstuche').value = p.costo_estuche || 0;
+                    document.getElementById('editCostoHule').value = p.costo_hule || 0;
+                    document.getElementById('editCostoCompleto').value = p.costo_completo || 0;
+                    document.getElementById('editAvailable').checked = p.disponible !== false;
+                }
+            } else {
+                // New product: let the auto description / auto costo-completo helpers run.
+                descriptionEditedManually = false;
+                costoCompletoEditedManually = false;
+
+                document.getElementById('editorModalTitle').innerText = 'Nuevo Producto';
+                document.getElementById('editId').value = 'prod-' + Date.now();
+                document.getElementById('editImage').value = 'https://placehold.co/400x300/f8fafc/1e293b?text=Nuevo+Sello';
+                updateImagePreview(document.getElementById('editImage').value);
+                document.getElementById('editImageDesign').value = '';
+                updateDesignImagePreview('');
+                document.getElementById('editCostoCompleto').value = '0.00';
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+        }
+
+        window.closeProductEditor = function () {
+            const modal = document.getElementById('productEditorModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        window.saveProductForm = async function (e) {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const updatedProduct = {
+                id,
+                nombre: document.getElementById('editName').value,
+                codigo: document.getElementById('editCode').value,
+                categoria: document.getElementById('editCategory').value,
+                medida: document.getElementById('editMedida').value,
+                descripcion: document.getElementById('editDescription').value,
+                imagen: getDirectImageUrl(document.getElementById('editImage').value),
+                imagen_diseno: getDirectImageUrl(document.getElementById('editImageDesign').value),
+                costo_estuche: parseFloat(document.getElementById('editCostoEstuche').value) || 0,
+                costo_hule: parseFloat(document.getElementById('editCostoHule').value) || 0,
+                costo_completo: parseFloat(document.getElementById('editCostoCompleto').value) || 0,
+                disponible: document.getElementById('editAvailable').checked
+            };
+
+            try {
+                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'productos', id), updatedProduct);
+                await loadProductsFromFirebase();
+                renderCategories();
+                renderProducts();
+                renderAdminProductsTable();
+                populateCategoryDatalist();
+                closeProductEditor();
+            } catch (err) {
+                alert("Error al guardar en Firebase: " + err.message);
+            }
+        }
+
+        window.deleteProductItem = async function (id) {
+            if (!confirm("¿Está seguro de eliminar este producto?")) return;
+            try {
+                await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'productos', id));
+                await loadProductsFromFirebase();
+                renderCategories();
+                renderProducts();
+                renderAdminProductsTable();
+                populateCategoryDatalist();
+            } catch (err) {
+                alert("Error al eliminar: " + err.message);
+            }
+        }
+    </script>
 </body>
+
 </html>
